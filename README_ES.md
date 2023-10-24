@@ -1,72 +1,62 @@
-# 07 Upload docker image
+# 07 Subir una imagen de docker
 
-In this example we are going to upload Docker images to Dockerhub.
+En este ejemplo vamos a subir una imagin de Docker a `Dockerhub` (el registry oficial de Docker).
 
-We will start from `06-docker-image`.
+Tomamos como punto de partida `06-docker-image`.
 
-# Steps to build it
+# Pasos
 
-`npm install` to install previous sample packages:
-
-```bash
-cd front
-npm install
-
-```
-
-In a second terminal:
-
-```bash
-cd back
-npm install
-
-```
-
-First, we need to login in Docker Hub registry:
+Lo primero, necesitamos hacer login en el registry de Docker Hub:
 
 ```bash
 docker login
 docker login <registry>
 ```
 
-> `<registry>`: By default is docker.io.
-> We can use `docker info` to see it.
+> `<registry>`: Por defecto el registry al que apunta es `docker.io`
+> pues usar el comando `docker info` para ver entre otra información a que registry estamos conectados.
 
-Then we need tag the image with registry and path information to match with the `DockerHub` repository name that we would like to upload:
+Ahora teneos que taggear la imagen con la informacíon del registry y el path para que coincida con el nombre del repositorio de `DockerHub` que queremos subir:
 
 ```bash
 docker tag <app-name>:<tag> <registry>/<path-to-repository>
+```
 
-# Docker Hub case
+En nuestro caso
+
+```bash
 docker tag book-store-app:2 <user-name>/<app-name>
 
 ```
 
-> `<registry>`: By default is docker.io.
-> `<path-to-repository>`: In the DockerHub case is <user-name>/<app-name>
-> `<tag>`: is optionally, by default would be latest.
+> `<registry>`: Por defecto es docker.io.
+> `<path-to-repository>`: En DockerHub es nombreusuario/nombreapp <user-name>/<app-name> > `<tag>`: Es opcional, si no lo informamos, el tag será _latest_.
 
-Check image list again:
+Vamos a ver las imágenes que tenemos:
 
 ```bash
 docker images
 ```
 
-Now, we can use docker `push` to upload it:
+Y hacemos un docker `push` de la imagen para subirla:
 
 ```bash
 docker push <user-name>/<app-name>
 ```
 
-We can use same image to tag `DockerHub` versions with tag equals `2`:
+Podemos usar la misma imagen para hacer un tag en `DockerHub` con el tag `2`:
 
 ```bash
 docker tag <app-name>:<tag> <registry>/<path-to-repository>:<tag>
-
-# Docker Hub case
-docker tag book-store-app:2 <user-name>/<app-name>:<tag>
-
 ```
+
+En nuestro caso:
+
+```bash
+docker tag book-store-app:2 <user-name>/<app-name>:<tag>
+```
+
+La secuencia completa para subirla, sería:
 
 ```bash
 docker tag book-store-app:2 <user-name>/<app-name>:2
@@ -74,7 +64,7 @@ docker images
 docker push <user-name>/<app-name>:2
 ```
 
-Let's update the version:
+Vamos a cambiar el puerto para que correo en 3001
 
 _./Dockerfile_
 
@@ -89,15 +79,15 @@ _./Dockerfile_
 
 ```
 
-Build and upload again:
+Hacemos un build y subimos de nuevo
 
 ```bash
-docker build -t <user-name>/<app-name>:3 .
+docker build -t brauliodiez/book-store:3 .
 docker images
 docker push <user-name>/<app-name>:3
 ```
 
-We should update the `latest` version to tag equals `3`:
+También podemos decir que `latest` apunte a la versión `3`:
 
 ```bash
 docker tag <user-name>/<app-name>:3 <user-name>/<app-name>:latest
@@ -105,9 +95,9 @@ docker images
 docker push <user-name>/<app-name>:latest
 ```
 
-> `latest` version doesn't upload automatically
+> Ojo que `latest` no se actualiza solo cuando subimos nueva versión.
 
-We could remove all local images:
+Y ahora podemos eliminar las imágenes locales:
 
 ```bash
 docker image rm book-store-app:1 book-store-app:2 <user-name>/<app-name>:2 <user-name>/<app-name>:3 <user-name>/<app-name>:latest
@@ -115,7 +105,7 @@ docker image rm book-store-app:1 book-store-app:2 <user-name>/<app-name>:2 <user
 docker images
 ```
 
-And create a container from Dockerhub's image:
+Y crear un contenedor desde la imagen de Dockerhub:
 
 ```bash
 docker run --name book-container --rm -d -p 3001:3001 <user-name>/<app-name>:3
